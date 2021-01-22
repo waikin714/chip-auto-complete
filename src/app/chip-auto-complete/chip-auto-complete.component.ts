@@ -219,7 +219,7 @@ export class ChipAutoCompleteComponent
     isDisabled ? this.basicForm.disable() : this.basicForm.enable();
   }
 
-  /** implement Validator*/
+  /** implement ControlValueAccessor FIXME*/
   validate(c: AbstractControl): ValidationErrors | null {
     console.log('Basic Info validation', c);
     return this.basicForm.valid
@@ -297,9 +297,15 @@ export class ChipAutoCompleteComponent
   }
   private _disabled = false;
 
-  /** implemnet MatFormFieldControl */
-  errorState = false;
-
+  /** implemnet MatFormFieldControl, for displaying mat-error */
+  get errorState() {
+    // return this.ngControl.errors !== null && !!this.ngControl.touched;
+    if(this.ngControl.touched && this.selectedChips.length === 0){
+      this.ngControl.control?.setErrors({'empty chip': true});
+      return true;
+    }
+    return false;
+  }
   /** implemnet MatFormFieldControl */
   controlType = 'chip-auto-complete';
 
@@ -311,5 +317,7 @@ export class ChipAutoCompleteComponent
     if ((event.target as Element).tagName.toLowerCase() != 'input') {
       this.elRef.nativeElement.querySelector('input')?.focus();
     }
+    this.ngControl?.control?.markAsTouched();
+
   }
 }
